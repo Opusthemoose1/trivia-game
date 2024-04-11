@@ -69,6 +69,22 @@ app.use(
     extended: true,
   })
 );
+
+app.post('/add_user', async(req, res) =>
+{
+
+  const hash = await bcrypt.hash(req.body.password, 10);
+  const query = 'insert into Users (UserName, Email, Password) VALUES ($1, $2, $3);';
+  try {
+    await db.any(query, [req.body.username, req.body.email, hash]);
+    res.json({message: 'Success'});
+    
+    }
+    catch (err) {
+      res.status(400).json({message: 'Failure'});
+    }
+
+});
 app.get('/welcome', (req, res) => {
   res.json({status: 'success', message: 'Welcome!'});
 });

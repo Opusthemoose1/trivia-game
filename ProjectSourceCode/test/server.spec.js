@@ -27,6 +27,31 @@ describe('Server!', () => {
   });
 });
 
-// *********************** TODO: WRITE 2 UNIT TESTCASES **************************
 
+
+// *********************** TODO: WRITE 2 UNIT TESTCASES **************************
+describe('Testing Add User API', () => {
+  it('positive : /add_user', done => {
+    chai
+      .request(server)
+      .post('/add_user')
+      .send({id: 5, username: 'John Doe', email: 'johndoe@gmail.com', password: 'realpassword'})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.message).to.equals('Success');
+        done();
+      });
+  });
+  it('negative : /add_user', done => {
+    chai 
+    .request(server)
+      .post('/add_user')
+      .send({id: 5, username: 'John Doe', password: 'realpassword'})
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body.message).to.equals('Failure');
+        done();
+         });
+    });
+});
 // ********************************************************************************
