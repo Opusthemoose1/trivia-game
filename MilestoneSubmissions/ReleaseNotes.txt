@@ -1,0 +1,30 @@
+3/18/2024
+- Added Folders
+- Create .gitignore
+- Update Readme.md 
+
+3/21/2024
+- Create TeamMeetingLogs folder and /week1 file
+- Create ProjectSourceCode
+- Added Project details
+
+4/04/2024
+- Created docker-compose.yaml and index.js
+- init_data and pages skeleton
+
+4/01/2024
+- Fixed docker-compose.yaml, got pages/login to render
+- Unit tests begin
+
+4/02/2024
+- Added register page (no functionality yet)
+
+4/03/2024
+- Login page rendering but no functionality
+- Added database and inserted sample data for testing 
+
+4/04/2024
+- Login and register pages (mostly) functional
+- Small change to login 
+- Added unit tests for add user 
+- Some changes to the pages (i.e. home, friends, etc.)

@@ -1,0 +1,4 @@
+Goals for next week:
+- Have a working SQL database
+- Begin and ideally have working API
+- User testing
