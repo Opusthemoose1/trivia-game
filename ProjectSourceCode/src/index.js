@@ -81,7 +81,11 @@ app.get('/', (req, res) =>
 app.get('/login', (req, res) => 
 {
   res.render('pages/login');
-  
+});
+
+app.get('/friends', (req, res) => 
+{
+  res.render('pages/friends');
 });
 
 app.post('/login', async (req, res) => {
