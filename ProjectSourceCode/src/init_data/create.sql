@@ -1,11 +1,10 @@
-CREATE DATABASE IF NOT EXISTS db;
 
 -- Table for storing user information
-CREATE TABLE Users (
-    UserID SERIAL PRIMARY KEY ,
-    UserName VARCHAR(50) NOT NULL,
-    Email VARCHAR(100) NOT NULL,
-    Password VARCHAR(50) NOT NULL
+CREATE TABLE users (
+    userid SERIAL PRIMARY KEY ,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    password VARCHAR(70) NOT NULL
 );
 
 

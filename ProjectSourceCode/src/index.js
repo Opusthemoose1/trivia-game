@@ -69,40 +69,71 @@ app.use(
     extended: true,
   })
 );
+app.get('/welcome', (req, res) => {
+  res.json({status: 'success', message: 'Welcome!'});
+});
 
-app.get('/', (req, res) => 
+app.get('/', (req, res) =>
 {
   res.redirect('/register');
-  
 });
+
 app.get('/login', (req, res) => 
 {
   res.render('pages/login');
   
 });
+
+app.post('/login', async (req, res) => {
+const query = 'select * from users where username = $1;';
+
+  try {
+      const user = await db.one(query, [req.body.username]);
+      const match = await bcrypt.compare(req.body.password, user.password);
+
+      if (match) {
+          req.session.user = user;
+          req.session.save();
+          res.redirect('/home');
+      } else {
+          // Incorrect password
+          res.render('pages/login', {message: "Incorrect Username or Password"});
+      }
+  } catch (error) {
+      // User not found in the database
+      console.log(error);
+      res.render('pages/login');
+  }
+});
+
 app.get('/register', (req, res) => 
 {
   res.render('pages/register');
   
 });
+app.get('/home', (req, res) =>
+{
+  res.render('pages/home');
+});
 app.post('/register', async (req, res) =>
 {
   const hash = await bcrypt.hash(req.body.password, 10);
-  const query = 'insert into users (username, password) VALUES ($1, $2);';
+  const query = 'insert into Users (UserName, Email, Password) VALUES ($1, $2, $3);';
   try {
-    await db.any(query, [req.body.username, hash])
+    await db.any(query, [req.body.username, req.body.email, hash]);
     res.render('pages/login');
     }
     catch (err) {
-      res.redirect("/register");
+      res.redirect('/register');
       console.log(err);
     }
 
 });
+
 const auth = (req, res, next) => {
   if (!req.session.user) {
     // Default to login page.
-    return res.redirect('/login');
+    return res.redirect('pages/login');
   }
   next();
 };
@@ -111,5 +142,5 @@ const auth = (req, res, next) => {
 app.use(auth);
 
 
-app.listen(3000);
+module.exports = app.listen(3000);
 console.log('Server is listening on port 3000');
