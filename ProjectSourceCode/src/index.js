@@ -70,15 +70,46 @@ app.use(
   })
 );
 
-// *****************************************************
-// <!-- Section 4 : API Routes -->
-// *****************************************************
+app.get('/', (req, res) => 
+{
+  res.redirect('/register');
+  
+});
+app.get('/login', (req, res) => 
+{
+  res.render('pages/login');
+  
+});
+app.get('/register', (req, res) => 
+{
+  res.render('pages/register');
+  
+});
+app.post('/register', async (req, res) =>
+{
+  const hash = await bcrypt.hash(req.body.password, 10);
+  const query = 'insert into users (username, password) VALUES ($1, $2);';
+  try {
+    await db.any(query, [req.body.username, hash])
+    res.render('pages/login');
+    }
+    catch (err) {
+      res.redirect("/register");
+      console.log(err);
+    }
+
+});
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+    // Default to login page.
+    return res.redirect('/login');
+  }
+  next();
+};
+
+// Authentication Required
+app.use(auth);
 
 
-
-// *****************************************************
-// <!-- Section 5 : Start Server-->
-// *****************************************************
-// starting the server and keeping the connection open to listen for more requests
 app.listen(3000);
 console.log('Server is listening on port 3000');
