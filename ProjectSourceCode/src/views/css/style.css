@@ -1,0 +1,17 @@
+
+body {
+    background-color: #f8f9fa; /* Light grey background, you can change it to any color you like */
+}
+
+header h1 {
+    color: #007bff; /* Bootstrap primary color */
+}
+
+.intro p {
+    font-size: 1.25rem; /* Larger font size for the intro text */
+}
+
+.actions button {
+    width: 150px; /* Set a specific width for buttons */
+    font-weight: bold; /* Make button text bold */
+}
