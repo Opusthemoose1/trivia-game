@@ -12,7 +12,7 @@ Spartak Mikayelyan (spmi6902@colorado.edu)
 
 -- Technology Stack
 - Frontend: HTML, CSS, JavaScript
-- Backend: 
+- Backend: Javascript
 - Database: PostgreSQL
 
 -- Prerequisites to run the application
