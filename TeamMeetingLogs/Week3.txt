@@ -1,4 +1,10 @@
 4/11/2024
 - Decisions Made
+    - We are behind and have to speed it up to ensure that we are done by the due date
 - Alternative actions/options discussed
+    - Split up the roles so that only one person is doing one task
+    - If there is too big of a task for one person to do solo, split it up into smaller tasks if possible
 - Follow-up items, roles and responsibilities
+    - Ryen and Spo -> Back-End/API, we must get a working API by the end of next week
+    - Raj and Noah -> Front-end, splitting up the pages making sure that everything is functional by next week
+    - Carson -> Assigned with database and is now going around helping with whatever is needed, filled out and updated all of the documents that we were behind on, (i.e, meeting logs, milestone submissions, Readme.md), also made the wireframe diagram
