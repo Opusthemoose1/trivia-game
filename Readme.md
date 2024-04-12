@@ -1,6 +1,6 @@
 This is our trivia game group project for CSCI 3308, group 013-03.
 
--- Brief Application Descriptiong
+-- Brief Application Description
 The Trivia Game is a web-based application that allows users to test their knowledge by answering trivia questions across various categories and game modes. Users can compete with friends, track their scores, and enjoy a fun and challenging gaming experience.
 
 -- Contributors
