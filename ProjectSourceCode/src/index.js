@@ -12,6 +12,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcrypt'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
+const Trivia = require('trivia-api')
+const trivia = new Trivia({ encoding: 'url3986' });
 
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
@@ -162,6 +164,33 @@ const auth = (req, res, next) => {
 // Authentication Required
 app.use(auth);
 
+app.get('/game', async (req, res) => 
+{
+  try {
+    let options = {
+      type: req.body?.type || 'multiple',
+      difficulty: req.body?.difficulty || 'hard',
+      category: req.body?.category
+    };
+
+    const questions = await trivia.getQuestions(options);
+
+    res.send(questions);
+  } catch (error) {
+    res.status(400).json({message: error.message });
+  } 
+});
+
+app.get('/categories', async (req, res) => 
+{
+  try {
+    const categories = await trivia.getCategories();
+
+    res.send(categories);
+  } catch (error) {
+    res.status(400).json({message: error.message });
+  } 
+});
 
 module.exports = app.listen(3000);
 console.log('Server is listening on port 3000');
