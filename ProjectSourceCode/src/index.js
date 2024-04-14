@@ -152,18 +152,13 @@ app.post('/register', async (req, res) =>
     }
 
 });
-
-const auth = (req, res, next) => {
-  if (!req.session.user) {
-    // Default to login page.
-    return res.redirect('pages/login');
+app.get('/temp', (req, res) =>
+{
+  if(req.session.user){
+    console.log('test');
   }
-  next();
-};
-
-// Authentication Required
-app.use(auth);
-
+  res.render('pages/temp');
+});
 app.get('/game', async (req, res) => 
 {
   try {
@@ -185,12 +180,24 @@ app.get('/categories', async (req, res) =>
 {
   try {
     const categories = await trivia.getCategories();
-
     res.send(categories);
   } catch (error) {
     res.status(400).json({message: error.message });
   } 
 });
+
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+    // Default to login page.
+    return res.redirect('/login');
+  }
+  next();
+};
+
+// Authentication Required
+app.use(auth);
+
+
 
 module.exports = app.listen(3000);
 console.log('Server is listening on port 3000');
