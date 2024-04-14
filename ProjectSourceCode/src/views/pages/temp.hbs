@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+    <title>Trivia Game - Temporary Page</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Trivia Game</h1>
+        <p>Choose a category to begin:</p>
+        <ul id="category-list">
+            <!-- Categories will be dynamically added here -->
+        </ul>
+    </div>
+    <script>
+        //Function to fetch trivia categories from the server
+        async function fetchCategories() {
+            try {
+                const response = await fetch ('/categories');
+                const categories = await response.json();
+                
+                displayCategories(categories);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        }
+
+        // function to display trivia categories on the page
+        function displayCategories(categories) {
+            const categoryList = document.getElementById('category-list');
+        
+            categoryList.innerHTML = ''; //should clear the previous content
+            console.log(categories);
+            categories.trivia_categories.forEach(category => {
+                const listItem = document.createElement('li');
+                listItem.textContent = category.name;
+                listItem.addEventListener('click', () => {
+                    showQuestions(category.id); // calls a function to show questions for selected category
+                });
+                categoryList.appendChild(listItem);
+            });
+        }
+
+        // function to show questions for the selected category
+        async function showQuestions(categoryId) {
+            try {
+                const response = await fetch('/game');//not sure what to put here)
+                const questions = await response.json();
+                //display questions
+                console.log('Questions:', questions);
+            } catch(error) {
+                console.error('Error fetching questions:', error);
+            }
+        }
+
+        //fetch categories when the page loads
+        window.addEventListener('load', fetchCategories);
+    </script>
+</body>
