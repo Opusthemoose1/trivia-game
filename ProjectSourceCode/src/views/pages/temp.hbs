@@ -1,16 +1,24 @@
 <!DOCTYPE html>
+
 <head>
     <title>Trivia Game - Temporary Page</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <div class="container">
+    
+    <div class="container", id = "categoryContainer">
         <h1>Welcome to the Trivia Game</h1>
         <p>Choose a category to begin:</p>
         <ul id="category-list">
             <!-- Categories will be dynamically added here -->
         </ul>
     </div>
+
+    <div id ="questionsContainer">
+    </div>
+
     <script>
+        
         //Function to fetch trivia categories from the server
         async function fetchCategories() {
             try {
@@ -32,20 +40,53 @@
             categories.trivia_categories.forEach(category => {
                 const listItem = document.createElement('li');
                 listItem.textContent = category.name;
+                listItem.classList.add('clickable-item');
+             
                 listItem.addEventListener('click', () => {
-                    showQuestions(category.id); // calls a function to show questions for selected category
+                    showQuestions(category.name); // calls a function to show questions for selected category
                 });
                 categoryList.appendChild(listItem);
             });
         }
 
         // function to show questions for the selected category
-        async function showQuestions(categoryId) {
+        async function showQuestions(category_name) {
             try {
-                const response = await fetch('/game');//not sure what to put here)
+                const response = await fetch(`/game?category=${category_name}`);
                 const questions = await response.json();
-                //display questions
-                console.log('Questions:', questions);
+
+                 const questionsContainer = document.getElementById('questionsContainer');
+                 const container = document.getElementById('categoryContainer');
+                 
+                // Clear existing questions
+                questionsContainer.innerHTML = '';
+                container.innerHTML = '';
+                
+               // questions.results.forEach(questions => {
+               // const questionElement = document.createElement('p');
+               // questionElement.textContent = question.question;
+               // console.log(incorrect_answers);
+               questions.results.forEach(question => {
+  // Create a paragraph for the main question
+            const questionElement = document.createElement('p');
+            questionElement.textContent = question.question;
+
+  // Append the main question element to the container
+        questionsContainer.appendChild(questionElement);
+
+  // Loop through the incorrect answers array
+        question.incorrect_answers.forEach(incorrectAnswer => {
+            const incorrectAnswerElement = document.createElement('p');
+            incorrectAnswerElement.textContent = incorrectAnswer;
+
+    // Append each incorrect answer element to the container
+            questionsContainer.appendChild(incorrectAnswerElement);
+  });
+
+
+
+  });
+                
             } catch(error) {
                 console.error('Error fetching questions:', error);
             }
