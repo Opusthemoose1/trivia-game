@@ -165,11 +165,9 @@ app.get('/game', async (req, res) =>
     let options = {
       type: req.body?.type || 'multiple',
       difficulty: req.body?.difficulty || 'hard',
-      category: req.body?.category
+      category: req.query.category
     };
-
     const questions = await trivia.getQuestions(options);
-
     res.send(questions);
   } catch (error) {
     res.status(400).json({message: error.message });
