@@ -107,6 +107,74 @@ app.get('/friends', (req, res) =>
   res.render('pages/friends');
 });
 
+//add friend endpoint
+app.post('/friends/add', async (req, res) => {
+  const UserId = req.session.user.userid;
+  const FriendId = req.body.friendId; //assuming you receive the friend ID from the request body
+
+  try {
+    // check if the friendship already exists
+    const checkQuery = 'SELECT * FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1)';
+    const existingFriendship = await db.oneOrNone(checkQuery, [UserId, FriendId]);
+
+    if (existingFriendship) {
+      return res.status(400).json({ error: 'Friendship already exists' });
+    }
+
+    //insert a new row into the friends table to represent the friendship
+    const insertQuery = 'INSERT INTO Friends (UserID, FriendID) VALUES ($1, $2)';
+    await db.none(insertQuery, [UserId, FriendId]);
+
+    res.json({ message: 'Friend added successfully' });
+  }
+  catch (error) {
+    console.error('Error adding friend:', error);
+    res.status(500).json({ error: 'Failed to add friend' });
+  }
+});
+
+//remove friend endpoint
+app.post('/friends/remove', async (req, res) => {
+  const userId = req.session.user.userid;
+  const friendId = req.body.friendId;
+
+  try {
+    const checkQuery = 'SELECT * FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1)';
+    const existingFriendship = await db.oneOrNone(checkQuery, [userId, friendId]);
+    
+    if (!existingFriendship) {
+      return res.status(400).json({ error: 'Friendship does not exist' });
+    }
+
+    //delete row from friends table
+    const deleteQuery = 'DELETE FROM Friends WHERE FriendshipID = $1';
+    await db.none(deleteQuery, existingFriendship.friendshipid);
+
+    res.json({ message: 'Friend removed successfully' });
+  } catch (error) {
+    console.error('Error removing friend:', error);
+    res.status(500).json({ error: 'Failed to remove friend' });
+  }
+});
+
+//get friends list
+// Example backend handling for listing friends
+app.get('/friends/list', async (req, res) => {
+  try {
+      // Fetch the user's friends from the database
+      const userId = req.session.user.userid;
+      const query = 'SELECT username FROM Users INNER JOIN Friends ON Users.userid = Friends.friendid WHERE Friends.userid = $1';
+      const friends = await db.any(query, [userId]);
+
+      // Render the friends list in the Handlebars template
+      res.render('pages/friends', { friends });
+  } catch (error) {
+      console.error('Error getting friends:', error);
+      res.status(500).json({ error: 'Failed to get friends' });
+  }
+});
+
+
 app.post('/login', async (req, res) => {
 const query = 'select * from users where username = $1;';
 

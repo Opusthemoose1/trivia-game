@@ -2,13 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friends</title>
 </head>
 <body>
+    <div class="friends-list">
+        <h2>Friends List</h2>
+        <ul id="friendsList">
+            {{#each friends}}
+                <li>{{this.username}}</li>
+            {{/each}}
+        </ul>
+    </div>
     
-<h1>Friends</h1>
+    <form action="/friends/add" method="POST">
+        <input type="text" name="friendId" placeholder="Enter name here">
+        <button type="submit">Add Friend</button>
+    </form>
 
+    <form action="/friends/remove" method="POST">
+        <input type="text" name="friendId" placeholder="Friend's User ID">
+        <button type="submit">Remove Friend</button>
+    </form>
+    
+
+    
 </body>
 </html>
