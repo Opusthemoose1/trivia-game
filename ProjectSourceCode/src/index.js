@@ -73,96 +73,88 @@ app.use(
   })
 );
 
-app.post('/add_user', async(req, res) =>
-{
+app.post('/add_user', async (req, res) => {
 
   const hash = await bcrypt.hash(req.body.password, 10);
   const query = 'insert into Users (UserName, Email, Password) VALUES ($1, $2, $3);';
   try {
     await db.any(query, [req.body.username, req.body.email, hash]);
-    res.json({message: 'Success'});
-    
-    }
-    catch (err) {
-      res.status(400).json({message: 'Failure'});
-    }
+    res.json({ message: 'Success' });
+
+  }
+  catch (err) {
+    res.status(400).json({ message: 'Failure' });
+  }
 
 });
 app.get('/welcome', (req, res) => {
-  res.json({status: 'success', message: 'Welcome!'});
+  res.json({ status: 'success', message: 'Welcome!' });
 });
 
-app.get('/', (req, res) =>
-{
+app.get('/', (req, res) => {
   res.redirect('/register');
 });
 
-app.get('/login', (req, res) => 
-{
+app.get('/login', (req, res) => {
   res.render('pages/login');
 });
 
-app.get('/friends', (req, res) => 
-{
+app.get('/friends', (req, res) => {
   res.render('pages/friends');
 });
 
 app.post('/login', async (req, res) => {
-const query = 'select * from users where username = $1;';
+  const query = 'select * from users where username = $1;';
 
   try {
-      const user = await db.one(query, [req.body.username]);
-      const match = await bcrypt.compare(req.body.password, user.password);
+    const user = await db.one(query, [req.body.username]);
+    const match = await bcrypt.compare(req.body.password, user.password);
 
-      if (match) {
-          req.session.user = user;
-          req.session.save();
-          res.redirect('/home');
-      } else {
-          // Incorrect password
-          res.render('pages/login', {message: "Incorrect Username or Password"});
-      }
+    if (match) {
+      req.session.user = user;
+      req.session.save();
+      res.redirect('/home');
+    } else {
+      // Incorrect password
+      res.render('pages/login', { message: "Incorrect Username or Password" });
+    }
   } catch (error) {
-      // User not found in the database
-      console.log(error);
-      res.render('pages/login');
+    // User not found in the database
+    console.log(error);
+    res.render('pages/login');
   }
 });
 
-app.get('/register', (req, res) => 
-{
+app.get('/register', (req, res) => {
   res.render('pages/register');
-  
+
 });
-app.get('/home', (req, res) =>
-{
+app.get('/home', (req, res) => {
   res.render('pages/home');
 });
-app.post('/register', async (req, res) =>
-{
+app.post('/register', async (req, res) => {
   const hash = await bcrypt.hash(req.body.password, 10);
   const query = 'insert into Users (UserName, Email, Password) VALUES ($1, $2, $3);';
   try {
     await db.any(query, [req.body.username, req.body.email, hash]);
     res.render('pages/login');
-    }
-    catch (err) {
-      res.redirect('/register');
-      console.log(err);
-    }
+  }
+  catch (err) {
+    res.redirect('/register');
+    console.log(err);
+  }
 
 });
-app.get('/temp', (req, res) =>
-{
-  if(req.session.user){
+app.get('/temp', (req, res) => {
+  if (req.session.user) {
     console.log('test');
   }
   res.render('pages/temp');
 });
 const shuffle = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]; // swap elements
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]]; // swap elements
   }
   return array;
 }
@@ -170,23 +162,23 @@ const shuffle = (array) => {
 
 app.get('/game', async (req, res) => {
   try {
-      let options = {
-          type: req.body?.type || 'multiple',
-          difficulty: req.body?.difficulty || 'hard',
-          category: req.query.category
-      };
-      const response = await trivia.getQuestions(options);
-      console.log(response);  // Log the full response to see the structure
+    let options = {
+      type: req.body?.type || 'multiple',
+      difficulty: req.body?.difficulty || 'hard',
+      category: req.query.category
+    };
+    const response = await trivia.getQuestions(options);
+    console.log(response);  // Log the full response to see the structure
 
-      // Assuming response has a property 'results' which is an array of questions
-      if (!response || !response.results) {
-          throw new Error('Failed to retrieve questions');
-      }
+    // Assuming response has a property 'results' which is an array of questions
+    if (!response || !response.results) {
+      throw new Error('Failed to retrieve questions');
+    }
 
-      res.render('pages/game', { questions: response.results });
+    res.render('pages/game', { questions: response.results });
   } catch (error) {
-      console.log('Error fetching or rendering questions:', error);
-      res.status(400).json({message: error.message});
+    console.log('Error fetching or rendering questions:', error);
+    res.status(400).json({ message: error.message });
   }
 });
 app.get('/start-game', (req, res) => {
@@ -194,11 +186,11 @@ app.get('/start-game', (req, res) => {
 });
 app.get('/categories', async (req, res) => {
   try {
-      const categories = await trivia.getCategories();
-      res.render('pages/categories', { categories: categories.trivia_categories });
+    const categories = await trivia.getCategories();
+    res.render('pages/categories', { categories: categories.trivia_categories });
   } catch (error) {
-      res.status(400).json({message: error.message});
-  } 
+    res.status(400).json({ message: error.message });
+  }
 });
 const auth = (req, res, next) => {
   if (!req.session.user) {
@@ -207,6 +199,23 @@ const auth = (req, res, next) => {
   }
   next();
 };
+app.post('/score', async (req, res) => {
+  if (req.session.score === undefined) {
+    req.session.score = 0;
+  }
+
+  const points = parseInt(req.query.points, 10) || 0;
+
+  
+  req.session.score += points;
+
+  
+  res.send({
+    message: 'Score updated successfully',
+   
+  });
+
+});
 
 // Authentication Required
 app.use(auth);
