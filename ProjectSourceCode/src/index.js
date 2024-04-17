@@ -206,13 +206,11 @@ app.post('/score', async (req, res) => {
 
   const points = parseInt(req.query.points, 10) || 0;
 
-  
   req.session.score += points;
 
-  
   res.send({
     message: 'Score updated successfully',
-   
+    totalScore: req.session.score
   });
 
 });
