@@ -39,3 +39,11 @@ CREATE TABLE UserScores (
     ModeID INT REFERENCES GameModes(ModeID)
 );
 
+CREATE TABLE Friends (
+    UserID INT NOT NULL,
+    FriendID INT NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (FriendID) REFERENCES Users(UserID),
+    CONSTRAINT unique_friendship UNIQUE (UserID, FriendID)
+);
+
