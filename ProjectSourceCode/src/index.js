@@ -159,7 +159,7 @@ app.post('/friends/remove', async (req, res) => {
 
 //get friends list
 // Example backend handling for listing friends
-app.get('/friends', async (req, res) => {
+app.get('/friends/list', async (req, res) => {
   try {
       // Fetch the user's friends from the database
       const userId = req.session.user.userid;
