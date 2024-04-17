@@ -159,34 +159,47 @@ app.get('/temp', (req, res) =>
   }
   res.render('pages/temp');
 });
-app.get('/game', async (req, res) => 
-{
+const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]]; // swap elements
+  }
+  return array;
+}
+
+
+app.get('/game', async (req, res) => {
   try {
-    let options = {
-      type: req.body?.type || 'multiple',
-      difficulty: req.body?.difficulty || 'hard',
-      category: req.query.category
-    };
-    const questions = await trivia.getQuestions(options);
-    console.log(questions);
-    
-    res.send(questions);
+      let options = {
+          type: req.body?.type || 'multiple',
+          difficulty: req.body?.difficulty || 'hard',
+          category: req.query.category
+      };
+      const response = await trivia.getQuestions(options);
+      console.log(response);  // Log the full response to see the structure
+
+      // Assuming response has a property 'results' which is an array of questions
+      if (!response || !response.results) {
+          throw new Error('Failed to retrieve questions');
+      }
+
+      res.render('pages/game', { questions: response.results });
   } catch (error) {
-    res.status(400).json({message: error.message });
+      console.log('Error fetching or rendering questions:', error);
+      res.status(400).json({message: error.message});
+  }
+});
+app.get('/start-game', (req, res) => {
+  res.redirect('/categories');
+});
+app.get('/categories', async (req, res) => {
+  try {
+      const categories = await trivia.getCategories();
+      res.render('pages/categories', { categories: categories.trivia_categories });
+  } catch (error) {
+      res.status(400).json({message: error.message});
   } 
 });
-
-app.get('/categories', async (req, res) => 
-{
-  try {
-    const categories = await trivia.getCategories();
-    res.send(categories);
-  } catch (error) {
-    res.status(400).json({message: error.message });
-  } 
-});
-
-
 const auth = (req, res, next) => {
   if (!req.session.user) {
     // Default to login page.
