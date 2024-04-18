@@ -12,7 +12,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcrypt'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
-const Trivia = require('trivia-api')
+const Trivia = require('trivia-api');
 const trivia = new Trivia({ encoding: 'url3986' });
 
 // *****************************************************
@@ -220,13 +220,18 @@ app.get('/temp', (req, res) => {
   res.render('pages/temp');
 });
 const shuffle = (array) => {
+  console.log("shuffle called");
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]]; // swap elements
   }
   return array;
 }
-
+app.get('/logout', (req, res) =>
+{
+  res.render('pages/register');
+}
+);
 
 app.get('/game', async (req, res) => {
   try {
@@ -238,28 +243,33 @@ app.get('/game', async (req, res) => {
     const response = await trivia.getQuestions(options);
     console.log(response);  // Log the full response to see the structure
 
-    // Assuming response has a property 'results' which is an array of questions
-    if (!response || !response.results) {
-      throw new Error('Failed to retrieve questions');
-    }
-
-    res.render('pages/game', { questions: response.results });
+      // Assuming response has a property 'results' which is an array of questions
+      if (!response || !response.results) {
+          throw new Error('Failed to retrieve questions');
+      }
+      const q_array = response.results[0].incorrect_answers;
+      q_array.push(response.results[0].correct_answer);
+      const shuffled_array = shuffle(q_array);
+      res.render('pages/game', { shuffledArray: shuffled_array, questions: response.results[0] });
   } catch (error) {
     console.log('Error fetching or rendering questions:', error);
+    res.status(400).json({ message: error.message });
+  }
+});
+app.get('/categories', async (req, res) => {
+  try {
+      
+    const categories = await trivia.getCategories();
+      
+      res.render('pages/categories', { categories: categories.trivia_categories });
+  } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 app.get('/start-game', (req, res) => {
   res.redirect('/categories');
 });
-app.get('/categories', async (req, res) => {
-  try {
-    const categories = await trivia.getCategories();
-    res.render('pages/categories', { categories: categories.trivia_categories });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+
 const auth = (req, res, next) => {
   if (!req.session.user) {
     // Default to login page.
