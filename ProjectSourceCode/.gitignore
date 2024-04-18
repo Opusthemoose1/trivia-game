@@ -1,5 +1,8 @@
-node_modules/
 
+#Dependency Directory
+node_modules
+#environment variables file
 .env
+#Package Lock
 
 package-lock.json
