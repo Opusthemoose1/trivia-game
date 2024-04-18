@@ -12,7 +12,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcrypt'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
-const Trivia = require('trivia-api')
+const Trivia = require('trivia-api');
 const trivia = new Trivia({ encoding: 'url3986' });
 
 // *****************************************************
@@ -154,9 +154,6 @@ app.post('/register', async (req, res) =>
 });
 app.get('/temp', (req, res) =>
 {
-  if(req.session.user){
-    console.log('test');
-  }
   res.render('pages/temp');
 });
 const shuffle = (array) => {
@@ -166,7 +163,11 @@ const shuffle = (array) => {
   }
   return array;
 }
-
+app.get('/logout', (req, res) =>
+{
+  res.render('pages/register');
+}
+);
 
 app.get('/game', async (req, res) => {
   try {
@@ -189,17 +190,20 @@ app.get('/game', async (req, res) => {
       res.status(400).json({message: error.message});
   }
 });
-app.get('/start-game', (req, res) => {
-  res.redirect('/categories');
-});
 app.get('/categories', async (req, res) => {
   try {
-      const categories = await trivia.getCategories();
+      
+    const categories = await trivia.getCategories();
+      
       res.render('pages/categories', { categories: categories.trivia_categories });
   } catch (error) {
       res.status(400).json({message: error.message});
   } 
 });
+app.get('/start-game', (req, res) => {
+  res.redirect('/categories');
+});
+
 const auth = (req, res, next) => {
   if (!req.session.user) {
     // Default to login page.
