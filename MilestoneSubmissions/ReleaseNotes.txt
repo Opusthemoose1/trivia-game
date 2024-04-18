@@ -28,3 +28,38 @@
 - Small change to login 
 - Added unit tests for add user 
 - Some changes to the pages (i.e. home, friends, etc.)
+
+4/07/2024
+- Added index.js, fixed docker, got pages/login to render
+
+4/09/2024
+- Added basic register page (more to be added soon)
+
+4/10/2024
+- Added database and inserted sample data 
+
+4/11/2024
+- Login and register mostly functional 
+- Changes to login and home (front-end)
+- Added unit tests for add user
+- .gitignore bug fixes
+
+4/13/2024
+- added trivia api package for quiz generation
+- created temp page for trivia
+    - able to display categories and questions
+
+4/14/2024
+- style/formatting changes for the pages
+
+4/16/2024
+- added buttons for trivia categories
+- fixed redirect issue
+- more css additions
+
+4/17/2024
+- Friends page developed (mostly)
+- fixed index.js issue
+- scoring system added for trivia
+
+

@@ -73,94 +73,157 @@ app.use(
   })
 );
 
-app.post('/add_user', async(req, res) =>
-{
+app.post('/add_user', async (req, res) => {
 
   const hash = await bcrypt.hash(req.body.password, 10);
   const query = 'insert into Users (UserName, Email, Password) VALUES ($1, $2, $3);';
   try {
     await db.any(query, [req.body.username, req.body.email, hash]);
-    res.json({message: 'Success'});
-    
-    }
-    catch (err) {
-      res.status(400).json({message: 'Failure'});
-    }
+    res.json({ message: 'Success' });
+
+  }
+  catch (err) {
+    res.status(400).json({ message: 'Failure' });
+  }
 
 });
 app.get('/welcome', (req, res) => {
-  res.json({status: 'success', message: 'Welcome!'});
+  res.json({ status: 'success', message: 'Welcome!' });
 });
 
-app.get('/', (req, res) =>
-{
+app.get('/', (req, res) => {
   res.redirect('/register');
 });
 
-app.get('/login', (req, res) => 
-{
+app.get('/login', (req, res) => {
   res.render('pages/login');
 });
 
-app.get('/friends', (req, res) => 
-{
+app.get('/friends', (req, res) => {
   res.render('pages/friends');
 });
 
-app.post('/login', async (req, res) => {
-const query = 'select * from users where username = $1;';
+//add friend endpoint
+app.post('/friends/add', async (req, res) => {
+  const UserId = req.session.user.userid;
+  const FriendId = req.body.friendId; //assuming you receive the friend ID from the request body
 
   try {
-      const user = await db.one(query, [req.body.username]);
-      const match = await bcrypt.compare(req.body.password, user.password);
+    // check if the friendship already exists
+    const checkQuery = 'SELECT * FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1)';
+    const existingFriendship = await db.oneOrNone(checkQuery, [UserId, FriendId]);
 
-      if (match) {
-          req.session.user = user;
-          req.session.save();
-          res.redirect('/home');
-      } else {
-          // Incorrect password
-          res.render('pages/login', {message: "Incorrect Username or Password"});
-      }
-  } catch (error) {
-      // User not found in the database
-      console.log(error);
-      res.render('pages/login');
+    if (existingFriendship) {
+      return res.status(400).json({ error: 'Friendship already exists' });
+    }
+
+    //insert a new row into the friends table to represent the friendship
+    const insertQuery = 'INSERT INTO Friends (UserID, FriendID) VALUES ($1, $2)';
+    await db.none(insertQuery, [UserId, FriendId]);
+
+    res.json({ message: 'Friend added successfully' });
+  }
+  catch (error) {
+    console.error('Error adding friend:', error);
+    res.status(500).json({ error: 'Failed to add friend' });
   }
 });
 
-app.get('/register', (req, res) => 
-{
-  res.render('pages/register');
-  
+//remove friend endpoint
+app.post('/friends/remove', async (req, res) => {
+  const userId = req.session.user.userid;
+  const friendId = req.body.friendId;
+
+  try {
+    const checkQuery = 'SELECT * FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1)';
+    const existingFriendship = await db.oneOrNone(checkQuery, [userId, friendId]);
+    
+    if (!existingFriendship) {
+      return res.status(400).json({ error: 'Friendship does not exist' });
+    }
+
+    //delete row from friends table
+    const deleteQuery = 'DELETE FROM Friends WHERE FriendshipID = $1';
+    await db.none(deleteQuery, existingFriendship.friendshipid);
+
+    res.json({ message: 'Friend removed successfully' });
+  } catch (error) {
+    console.error('Error removing friend:', error);
+    res.status(500).json({ error: 'Failed to remove friend' });
+  }
 });
-app.get('/home', (req, res) =>
-{
+
+//get friends list
+// Example backend handling for listing friends
+app.get('/friends/list', async (req, res) => {
+  try {
+      // Fetch the user's friends from the database
+      const userId = req.session.user.userid;
+      const query = 'SELECT username FROM Users INNER JOIN Friends ON Users.userid = Friends.friendid WHERE Friends.userid = $1';
+      const friends = await db.any(query, [userId]);
+
+      // Render the friends list in the Handlebars template
+      res.render('pages/friends', { friends });
+  } catch (error) {
+      console.error('Error getting friends:', error);
+      res.status(500).json({ error: 'Failed to get friends' });
+  }
+});
+
+
+app.post('/login', async (req, res) => {
+  const query = 'select * from users where username = $1;';
+
+  try {
+    const user = await db.one(query, [req.body.username]);
+    const match = await bcrypt.compare(req.body.password, user.password);
+
+    if (match) {
+      req.session.user = user;
+      req.session.save();
+      res.redirect('/home');
+    } else {
+      // Incorrect password
+      res.render('pages/login', { message: "Incorrect Username or Password" });
+    }
+  } catch (error) {
+    // User not found in the database
+    console.log(error);
+    res.render('pages/login');
+  }
+});
+
+app.get('/register', (req, res) => {
+  res.render('pages/register');
+
+});
+app.get('/home', (req, res) => {
   res.render('pages/home');
 });
-app.post('/register', async (req, res) =>
-{
+app.post('/register', async (req, res) => {
   const hash = await bcrypt.hash(req.body.password, 10);
   const query = 'insert into Users (UserName, Email, Password) VALUES ($1, $2, $3);';
   try {
     await db.any(query, [req.body.username, req.body.email, hash]);
     res.render('pages/login');
-    }
-    catch (err) {
-      res.redirect('/register');
-      console.log(err);
-    }
+  }
+  catch (err) {
+    res.redirect('/register');
+    console.log(err);
+  }
 
 });
-app.get('/temp', (req, res) =>
-{
+app.get('/temp', (req, res) => {
+  if (req.session.user) {
+    console.log('test');
+  }
   res.render('pages/temp');
 });
 const shuffle = (array) => {
   console.log("shuffle called");
   for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]; // swap elements
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]]; // swap elements
   }
   return array;
 }
@@ -172,13 +235,13 @@ app.get('/logout', (req, res) =>
 
 app.get('/game', async (req, res) => {
   try {
-      let options = {
-          type: req.body?.type || 'multiple',
-          difficulty: req.body?.difficulty || 'hard',
-          category: req.query.category
-      };
-      const response = await trivia.getQuestions(options);
-      console.log(response);  // Log the full response to see the structure
+    let options = {
+      type: req.body?.type || 'multiple',
+      difficulty: req.body?.difficulty || 'hard',
+      category: req.query.category
+    };
+    const response = await trivia.getQuestions(options);
+    console.log(response);  // Log the full response to see the structure
 
       // Assuming response has a property 'results' which is an array of questions
       if (!response || !response.results) {
@@ -189,8 +252,8 @@ app.get('/game', async (req, res) => {
       const shuffled_array = shuffle(q_array);
       res.render('pages/game', { shuffledArray: shuffled_array, questions: response.results[0] });
   } catch (error) {
-      console.log('Error fetching or rendering questions:', error);
-      res.status(400).json({message: error.message});
+    console.log('Error fetching or rendering questions:', error);
+    res.status(400).json({ message: error.message });
   }
 });
 app.get('/categories', async (req, res) => {
@@ -200,8 +263,8 @@ app.get('/categories', async (req, res) => {
       
       res.render('pages/categories', { categories: categories.trivia_categories });
   } catch (error) {
-      res.status(400).json({message: error.message});
-  } 
+    res.status(400).json({ message: error.message });
+  }
 });
 app.get('/start-game', (req, res) => {
   res.redirect('/categories');
@@ -214,6 +277,21 @@ const auth = (req, res, next) => {
   }
   next();
 };
+app.post('/score', async (req, res) => {
+  if (req.session.score === undefined) {
+    req.session.score = 0;
+  }
+
+  const points = parseInt(req.query.points, 10) || 0;
+
+  req.session.score += points;
+
+  res.send({
+    message: 'Score updated successfully',
+    totalScore: req.session.score
+  });
+
+});
 
 // Authentication Required
 app.use(auth);

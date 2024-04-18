@@ -1,10 +1,11 @@
+CREATE DATABASE IF NOT EXISTS db;
 
 -- Table for storing user information
-CREATE TABLE users (
-    userid SERIAL PRIMARY KEY ,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    password VARCHAR(70) NOT NULL
+CREATE TABLE Users (
+    UserID SERIAL PRIMARY KEY ,
+    UserName VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) NOT NULL,
+    Password VARCHAR(50) NOT NULL
 );
 
 
@@ -37,13 +38,5 @@ CREATE TABLE UserScores (
     GameDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CategoryID INT REFERENCES TriviaCategories(CategoryID),
     ModeID INT REFERENCES GameModes(ModeID)
-);
-
-CREATE TABLE Friends (
-    UserID INT NOT NULL,
-    FriendID INT NOT NULL,
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (FriendID) REFERENCES Users(UserID),
-    CONSTRAINT unique_friendship UNIQUE (UserID, FriendID)
 );
 
