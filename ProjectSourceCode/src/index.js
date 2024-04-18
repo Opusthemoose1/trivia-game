@@ -176,24 +176,31 @@ app.get('/friends/list', async (req, res) => {
 
 
 app.post('/login', async (req, res) => {
-const query = 'select * from users where username = $1;';
+  const query = 'SELECT * FROM users WHERE username = $1 LIMIT 1';
 
   try {
-      const user = await db.one(query, [req.body.username]);
-      const match = await bcrypt.compare(req.body.password, user.password);
-
-      if (match) {
-          req.session.user = user;
-          req.session.save();
-          res.redirect('/home');
+      const user = await db.oneOrNone(query, [req.body.username]);
+      
+      if (user) {
+          const match = await bcrypt.compare(req.body.password, user.password);
+          
+          if (match) {
+              // Correct username and password
+              req.session.user = user;
+              req.session.save();
+              return res.redirect('/home');
+          } else {
+              // Incorrect password
+              return res.render('pages/login', { message: "Incorrect Password" });
+          }
       } else {
-          // Incorrect password
-          res.render('pages/login', {message: "Incorrect Username or Password"});
+          // User not found
+          return res.render('pages/login', { message: "User not found" });
       }
   } catch (error) {
-      // User not found in the database
-      console.log(error);
-      res.render('pages/login');
+      // Error occurred
+      console.error('Error during login:', error);
+      return res.status(500).render('pages/error', { message: "Internal Server Error" });
   }
 });
 
@@ -260,6 +267,8 @@ app.get('/game', async (req, res) => {
 app.get('/start-game', (req, res) => {
   res.redirect('/categories');
 });
+
+
 app.get('/categories', async (req, res) => {
   try {
       const categories = await trivia.getCategories();
