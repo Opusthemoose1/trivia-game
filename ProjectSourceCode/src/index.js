@@ -157,6 +157,7 @@ app.get('/temp', (req, res) =>
   res.render('pages/temp');
 });
 const shuffle = (array) => {
+  console.log("shuffle called");
   for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]]; // swap elements
@@ -183,8 +184,10 @@ app.get('/game', async (req, res) => {
       if (!response || !response.results) {
           throw new Error('Failed to retrieve questions');
       }
-
-      res.render('pages/game', { questions: response.results });
+      const q_array = response.results[0].incorrect_answers;
+      q_array.push(response.results[0].correct_answer);
+      const shuffled_array = shuffle(q_array);
+      res.render('pages/game', { shuffledArray: shuffled_array, questions: response.results[0] });
   } catch (error) {
       console.log('Error fetching or rendering questions:', error);
       res.status(400).json({message: error.message});

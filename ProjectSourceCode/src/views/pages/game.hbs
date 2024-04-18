@@ -2,16 +2,14 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="../css/style.css">
 {{#if questions}}
-    {{#each questions.results}}
         <div class="mb-4">
-            <p class="lead">{{this.question}}</p>
+            <p class="lead">{{questions.question}}</p>
             <ul class="list-unstyled">
-                {{#each shuffleAnswers this.correct_answer this.incorrect_answers}}
+                {{#each shuffledArray}}
                     <li><button class="btn btn-outline-primary btn-block text-left">{{this}}</button></li>
                 {{/each}}
             </ul>
         </div>
-    {{/each}}
 {{else}}
     <p>No questions available.</p>
 {{/if}}
