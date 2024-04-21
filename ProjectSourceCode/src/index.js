@@ -262,7 +262,7 @@ app.get('/game', async (req, res) => {
       q_array.push(response.results[0].correct_answer);
       const shuffled_array = shuffle(q_array);
       req.session.correct_answer = response.results[0].correct_answer;
-      res.render('pages/game', {  shuffledArray: shuffled_array, questions: response.results[0] });
+      res.render('pages/game', { score: req.session.score, shuffledArray: shuffled_array, questions: response.results[0] });
   } catch (error) {
     console.log('Error fetching or rendering questions:', error);
     res.status(400).json({ message: error.message });
