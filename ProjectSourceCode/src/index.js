@@ -240,6 +240,17 @@ app.get('/game', async (req, res) => {
       difficulty: req.body?.difficulty || 'hard',
       category: req.query.category
     };
+
+    let answer = req.query.answer;
+    
+    if(!req.session.score) {
+      req.session.score = 0;
+    }
+
+    if (answer == req.session?.correct_answer) {
+        req.session.score += 10;
+    }
+
     const response = await trivia.getQuestions(options);
     console.log(response);  // Log the full response to see the structure
 
@@ -250,7 +261,8 @@ app.get('/game', async (req, res) => {
       const q_array = response.results[0].incorrect_answers;
       q_array.push(response.results[0].correct_answer);
       const shuffled_array = shuffle(q_array);
-      res.render('pages/game', { shuffledArray: shuffled_array, questions: response.results[0] });
+      req.session.correct_answer = response.results[0].correct_answer;
+      res.render('pages/game', {  shuffledArray: shuffled_array, questions: response.results[0] });
   } catch (error) {
     console.log('Error fetching or rendering questions:', error);
     res.status(400).json({ message: error.message });

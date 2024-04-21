@@ -1,16 +1,20 @@
 <h1>Trivia Questions</h1>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="../css/style.css">
+<script>
+    function redirectToGame(answer) {
+        window.location.href = "game?answer=" + answer;
+    }
+</script>
 {{#if questions}}
         <div class="mb-4">
             <p class="lead">{{questions.question}}</p>
             <ul class="list-unstyled">
                 {{#each shuffledArray}}
-                    <li><button class="btn btn-outline-primary btn-block text-left">{{this}}</button></li>
+                    <li><button class="btn btn-outline-primary btn-block text-left" onclick="redirectToGame('{{this}}')">{{this}}</button></li>
                 {{/each}}
             </ul>
         </div>
 {{else}}
     <p>No questions available.</p>
 {{/if}}
-
