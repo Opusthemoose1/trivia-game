@@ -2,13 +2,13 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="../css/style.css">
 
-<div id="Timer-Game", style="display:block"></div>
+
 
 <script>
     function redirectToGame(answer) {
         window.location.href = "game?answer=" + answer;
     }
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
    
     //Start of timer function
     var timer_start = 5;
@@ -58,19 +58,22 @@ window.onload = time_left;
 });
 
 </script>
+
 <div id ="delaypage", style="display:block">
     <h1>Get ready!</h1>
 
 </div>
 <div id = "questionsBlock", style = "display:none">
 <h1>Trivia Questions</h1>
+<div id="Timer-Game", style="display:block"></div>
 <h2>Score: {{score}}</h2>
 {{#if questions}}
         <div class="mb-4">
             <p class="lead">{{{questions.question}}}</p>
+            
             <ul class="list-unstyled">
                 {{#each shuffledArray}}
-                    <li><button class="btn btn-outline-primary btn-block text-left" onclick="redirectToGame('{{this}}')">{{this}}</button></li>
+                    <li><button class="btn btn-outline-primary btn-block text-left" onclick="redirectToGame('{{this}}')">{{{this}}}</button></li>
                 {{/each}}
             </ul>
         </div>
