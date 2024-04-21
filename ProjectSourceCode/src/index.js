@@ -251,6 +251,8 @@ app.get('/game', async (req, res) => {
         req.session.score += 10;
     }
 
+    req.session.correct_answer = undefined;
+
     const response = await trivia.getQuestions(options);
     console.log(response);  // Log the full response to see the structure
 
