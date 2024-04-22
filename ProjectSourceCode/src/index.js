@@ -13,6 +13,7 @@ const session = require('express-session'); // To set the session object. To sto
 const bcrypt = require('bcrypt'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
 const Trivia = require('trivia-api');
+const { register } = require('module');
 const trivia = new Trivia({ encoding: 'url3986' });
 
 // *****************************************************
@@ -203,9 +204,32 @@ app.get('/home', (req, res) => {
 app.post('/register', async (req, res) => {
   const hash = await bcrypt.hash(req.body.password, 10);
   const query = 'insert into Users (UserName, Email, Password) VALUES ($1, $2, $3);';
+  /* This block is to check if the user is already registered */
+  const register_check = 'select * from users where username = $1;';
+  try{
+  const user = await db.oneOrNone(register_check, [req.body.username]);
+  if (user)
+  {
+    res.redirect('/register');
+    console.log("User is already registered");
+  }
+}catch(error)
+  {
+    res.redirect('/login');
+    console.log(error);
+  }
+  
   try {
-    await db.any(query, [req.body.username, req.body.email, hash]);
+    if (req.body.password == req.body.confirm_password)
+    {
+    const insert = await db.any(query, [req.body.username, req.body.email, hash]);
     res.render('pages/login');
+    }
+    else
+    {
+      console.log("Passwords don't match!");
+      res.redirect('/register');
+    }
   }
   catch (err) {
     res.redirect('/register');
