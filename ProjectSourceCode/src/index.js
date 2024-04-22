@@ -246,13 +246,22 @@ app.get('/game', async (req, res) => {
     if(!req.session.score) {
       req.session.score = 0;
     }
+    if(!req.session.round) {
+      req.session.round = 0;
+    }
+
 
     if (answer == req.session?.correct_answer) {
         req.session.score += 10;
     }
 
     req.session.correct_answer = undefined;
-
+    req.session.round++;
+    if (req.session.round >= 10) {
+      req.session.round = 0;
+      res.render('pages/home');
+      return;
+    }
     const response = await trivia.getQuestions(options);
     console.log(response);  // Log the full response to see the structure
 
@@ -264,7 +273,8 @@ app.get('/game', async (req, res) => {
       q_array.push(response.results[0].correct_answer);
       const shuffled_array = shuffle(q_array);
       req.session.correct_answer = response.results[0].correct_answer;
-      res.render('pages/game', { score: req.session.score, shuffledArray: shuffled_array, questions: response.results[0] });
+      
+      res.render('pages/game', { score: req.session.score, shuffledArray: shuffled_array, questions: response.results[0], round: req.session.round });
   } catch (error) {
     console.log('Error fetching or rendering questions:', error);
     res.status(400).json({ message: error.message });
