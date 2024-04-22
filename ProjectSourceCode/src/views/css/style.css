@@ -9,6 +9,7 @@ body, header, main, section {
 
 header, main {
     width: 100%; /* Full width */
+    height: 30%;
 }
 
 body {
@@ -26,11 +27,11 @@ header {
 }
 
 header h1 {
-    color: #fff; /* Ensuring the header text is white */
+    color: #fff;
 }
 
 .intro p {
-    font-size: 1.2em; /* Slightly reduced from 1.25rem for consistency */
+    font-size: 1.2em;
 }
 
 .actions {
@@ -66,3 +67,36 @@ header h1 {
     margin-bottom: 5px;
 }
 
+
+.form-inline {
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.form-control {
+    margin-right: 10px;
+    width: auto; /* Adjusts the width based on content */
+}
+
+.btn-primary, .btn-danger {
+    padding: 8px 16px; /* More padding for better touch interaction */
+}
+
+ul#friendsList {
+    padding: 0;
+    list-style-type: none; /* Removes bullet points */
+}
+
+ul#friendsList li {
+    margin: 10px 0;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    padding: 10px 20px;
+    width: 300px; /* Fixed width for uniform appearance */
+    text-align: left; /* Align text to the left */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Soft shadow for depth */
+}
+
+ul#friendsList li:hover {
+    background-color: #dfe4ea; /* Lighter on hover for interactive feel */
+}
