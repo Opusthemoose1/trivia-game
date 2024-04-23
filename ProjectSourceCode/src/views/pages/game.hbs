@@ -46,8 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     timer_start--;
-  
-    timerElement.innerHTML = timer_start;
+
+
+    timerElement.innerHTML = "Round Timer: " + timer_start;
    
     console.log(timer_start);
 
@@ -61,12 +62,14 @@ window.onload = time_left;
 
 <div id ="delaypage", style="display:block">
     <h1>Get ready!</h1>
-
-</div>
-<div id = "questionsBlock", style = "display:none">
-<h1>Trivia Questions</h1>
-<div id="Timer-Game", style="display:block"></div>
 <h2>Score: {{score}} Round: {{round}}/10</h2>
+</div>
+<div id = "questionsBlock", style = "display:none">  
+<h1>Trivia Questions</h1>
+<h2>Score: {{score}} </h2>
+<h2>Round: {{round}}/10</h2>
+<div id="Timer-Game", style="display:block"></div>
+
 {{#if questions}}
         <div class="mb-4">
             <p class="lead">{{{questions.question}}}</p>
