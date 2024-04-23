@@ -18,7 +18,11 @@
         <h2>Friends List</h2>
         <ul id="friendsList">
             {{#each friends}}
-                <li>{{this.username}}</li>
+                <li>
+                    <strong>{{this.username}}</strong>
+                    <span>Best Score: {{this.bestScore}}</span>
+                    <span>Category: {{this.category}}</span>
+                </li>
             {{/each}}
         </ul>
     </div>
