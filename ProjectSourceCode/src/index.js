@@ -92,9 +92,9 @@ app.get('/welcome', (req, res) => {
   res.json({ status: 'success', message: 'Welcome!' });
 });
 
-app.get('/', (req, res) => {
-  res.redirect('/register');
-});
+// app.get('/', (req, res) => {
+//   res.redirect('/register');
+// });
 
 app.get('/login', (req, res) => {
   res.render('pages/login');
@@ -244,26 +244,44 @@ app.get('/temp', (req, res) => {
   res.render('pages/temp');
 });
 const shuffle = (array) => {
-  console.log("shuffle called");
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]]; // swap elements
   }
   return array;
 }
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+    // Default to login page.
+    return res.redirect('/login');
+  }
+  next();
+};
+app.use(auth);
 app.get('/logout', (req, res) =>
 {
   res.render('pages/register');
 }
 );
+app.post('/set-category', async (req, res) =>{
+req.session.category = req.body.category;
+res.redirect('/game')
+
+});
 
 app.get('/game', async (req, res) => {
+ 
   try {
+    if (req.session.category != undefined)
+    {
+      console.log(req.session.category);
+    }
     let options = {
       type: req.body?.type || 'multiple',
-      difficulty: req.body?.difficulty || 'hard',
-      category: req.query.category
-    };
+      difficulty: req.body?.difficulty || 'medium',
+      category: req.body?.category || parseInt(req.session.category,10)
+    }
+    console.log(options);
 
     let answer = req.query.answer;
     
@@ -283,11 +301,10 @@ app.get('/game', async (req, res) => {
     req.session.round++;
     if (req.session.round >= 10) {
       req.session.round = 0;
-      res.render('pages/home');
+      res.redirect('/gameover');
       return;
     }
     const response = await trivia.getQuestions(options);
-    console.log(response);  // Log the full response to see the structure
 
       // Assuming response has a property 'results' which is an array of questions
       if (!response || !response.results) {
@@ -298,11 +315,14 @@ app.get('/game', async (req, res) => {
       const shuffled_array = shuffle(q_array);
       req.session.correct_answer = response.results[0].correct_answer;
       
-      res.render('pages/game', { score: req.session.score, shuffledArray: shuffled_array, questions: response.results[0], round: req.session.round });
-  } catch (error) {
-    console.log('Error fetching or rendering questions:', error);
-    res.status(400).json({ message: error.message });
-  }
+      res.render('pages/game', { score: req.session.score, shuffledArray: shuffled_array, questions: response.results[0], round: req.session.round});
+    }
+      catch(error)
+      {
+        console.log("Error fetching questions: " + error);
+      }
+    
+    
 });
 app.get('/categories', async (req, res) => {
   try {
@@ -318,13 +338,7 @@ app.get('/start-game', (req, res) => {
   res.redirect('/categories');
 });
 
-const auth = (req, res, next) => {
-  if (!req.session.user) {
-    // Default to login page.
-    return res.redirect('/login');
-  }
-  next();
-};
+
 app.post('/score', async (req, res) => {
   if (req.session.score === undefined) {
     req.session.score = 0;
@@ -340,9 +354,11 @@ app.post('/score', async (req, res) => {
   });
 
 });
+app.get('/gameover', (req, res) =>
+{
+  res.render('pages/gameover', {score: req.session.score});
+});
 
-// Authentication Required
-app.use(auth);
 
 
 
