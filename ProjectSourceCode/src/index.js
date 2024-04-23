@@ -293,7 +293,7 @@ app.get('/game', async (req, res) => {
     }
 
 
-    if (answer == req.session?.correct_answer) {
+    if (answer == req.session?.correct_answer && req.session.round > 1) {
         req.session.score += 10;
     }
 
@@ -302,6 +302,7 @@ app.get('/game', async (req, res) => {
     if (req.session.round >= 10) {
       req.session.round = 0;
       res.redirect('/gameover');
+      req.session.score = 0;
       return;
     }
     const response = await trivia.getQuestions(options);
@@ -357,6 +358,7 @@ app.post('/score', async (req, res) => {
 app.get('/gameover', (req, res) =>
 {
   res.render('pages/gameover', {score: req.session.score});
+  req.session.score = 0;
 });
 
 

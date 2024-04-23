@@ -1,11 +1,11 @@
-<h1>Select a Category</h1>
+<h1>Select a Category:</h1>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="../css/style.css">
 
 <form id="category-form" action="/set-category" method="POST">
 <ul>
     {{#each categories}}
-    <li><button type="submit" class="category-button" name="category" value="{{id}}">{{name}}</button></li>
+    <button type="submit" class="category-button" name="category" value="{{id}}">{{name}}</button>
     {{/each}}
 </ul>
 </form>
