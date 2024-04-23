@@ -160,17 +160,25 @@ app.post('/friends/remove', async (req, res) => {
 //get friends list
 // Example backend handling for listing friends
 app.get('/friends/list', async (req, res) => {
-  try {
-      // Fetch the user's friends from the database
-      const userId = req.session.user.userid;
-      const query = 'SELECT username FROM Users INNER JOIN Friends ON Users.userid = Friends.friendid WHERE Friends.userid = $1';
-      const friends = await db.any(query, [userId]);
+  const userId = req.session.user.userid;
 
-      // Render the friends list in the Handlebars template
-      res.render('pages/friends', { friends });
-  } catch (error) {
-      console.error('Error getting friends:', error);
-      res.status(500).json({ error: 'Failed to get friends' });
+  try {
+    const query = `
+      SELECT u.userid, u.username, MAX(us.score) AS best_score, tc.categoryname AS best_category
+      FROM users u
+      INNER JOIN friends f ON u.userid = f.friendid
+      INNER JOIN userscores us ON u.userid = us.userid
+      INNER JOIN triviacategories tc ON us.categoryid = tc.categoryid
+      WHERE f.userid = $1
+      GROUP BY u.userid, u.username, tc.categoryname;
+      `;
+      const friendsWithScores = await db.any(query, [userId]);
+      res.json({ friendsWithScores });
+  }
+  catch (error)
+  {
+    console.error('Error getting scores:', error);
+    res.status(500).json({ error: 'Failed to get friends with scores' });
   }
 });
 
