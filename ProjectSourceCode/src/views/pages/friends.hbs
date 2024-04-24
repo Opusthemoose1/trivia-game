@@ -31,12 +31,12 @@
         <section class="actions">
             <h3>Manage Your Friends</h3>
             <form action="/friends/add" method="POST" class="form-inline mb-2">
-                <input type="text" name="friendId" placeholder="Enter User ID" class="form-control mr-sm-2">
+                <input type="text" id="friendUsername" name="friendUsername" placeholder="Enter User ID" class="form-control mr-sm-2">
                 <button type="submit" class="btn btn-primary">Add Friend</button>
             </form>
 
             <form action="/friends/remove" method="POST" class="form-inline">
-                <input type="text" name="friendId" placeholder="Friend's User ID" class="form-control mr-sm-2">
+                <input type="text" id="friendUsername" name="friendUsername" placeholder="Friend's User ID" class="form-control mr-sm-2">
                 <button type="submit" class="btn btn-danger">Remove Friend</button>
             </form>
         </section>

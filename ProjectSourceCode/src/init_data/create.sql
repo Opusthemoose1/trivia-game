@@ -1,7 +1,6 @@
 
 -- Table for storing user information
 CREATE TABLE users (
-    userid SERIAL PRIMARY KEY ,
     username VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     password VARCHAR(70) NOT NULL
@@ -32,7 +31,7 @@ CREATE TABLE TriviaQuestions (
 -- Table for storing user scores
 CREATE TABLE UserScores (
     ScoreID SERIAL PRIMARY KEY,
-    UserID INT REFERENCES Users(UserID),
+    Username VARCHAR(50) REFERENCES Users(username),
     Score INT NOT NULL,
     GameDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CategoryID INT REFERENCES TriviaCategories(CategoryID),
@@ -40,10 +39,10 @@ CREATE TABLE UserScores (
 );
 
 CREATE TABLE Friends (
-    UserID INT NOT NULL,
-    FriendID INT NOT NULL,
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (FriendID) REFERENCES Users(UserID),
+    UserID VARCHAR(50) NOT NULL,
+    FriendID VARCHAR(50) NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(username),
+    FOREIGN KEY (FriendID) REFERENCES Users(username),
     CONSTRAINT unique_friendship UNIQUE (UserID, FriendID)
 );
 

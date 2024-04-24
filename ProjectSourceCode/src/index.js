@@ -106,21 +106,25 @@ app.get('/friends', (req, res) => {
 
 //add friend endpoint
 app.post('/friends/add', async (req, res) => {
-  const UserId = req.session.user.userid;
-  const FriendId = req.body.friendId; //assuming you receive the friend ID from the request body
+  const currentUsername = req.session.user.username;
+  const friendUsername = req.body.friendUsername; //assuming you receive the friend ID from the request body
 
   try {
     // check if the friendship already exists
-    const checkQuery = 'SELECT * FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1)';
-    const existingFriendship = await db.oneOrNone(checkQuery, [UserId, FriendId]);
-
+    const checkQuery = `
+      SELECT * FROM Friends 
+      WHERE (UserID = $1 AND FriendID = $2) 
+      OR (UserID = $2 AND FriendID = $1);
+    `;
+    const existingFriendship = await db.oneOrNone(checkQuery, [currentUsername, friendUsername]);
+    
     if (existingFriendship) {
       return res.status(400).json({ error: 'Friendship already exists' });
     }
 
     //insert a new row into the friends table to represent the friendship
-    const insertQuery = 'INSERT INTO Friends (UserID, FriendID) VALUES ($1, $2)';
-    await db.none(insertQuery, [UserId, FriendId]);
+    const insertQuery = 'INSERT INTO Friends (UserID, FriendID) VALUES ($1, $2);';
+    await db.none(insertQuery, [currentUsername, friendUsername]);
 
     res.json({ message: 'Friend added successfully' });
   }
@@ -132,20 +136,24 @@ app.post('/friends/add', async (req, res) => {
 
 //remove friend endpoint
 app.post('/friends/remove', async (req, res) => {
-  const userId = req.session.user.userid;
-  const friendId = req.body.friendId;
+  const currentUsername = req.session.user.username;
+  const friendUsername = req.body.friendUsername;
 
   try {
-    const checkQuery = 'SELECT * FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1)';
-    const existingFriendship = await db.oneOrNone(checkQuery, [userId, friendId]);
+    const checkQuery = `
+      SELECT * FROM Friends 
+      WHERE (UserID = $1 AND FriendID = $2) 
+      OR (UserID = $2 AND FriendID = $1);
+    `;
+    const existingFriendship = await db.oneOrNone(checkQuery, [currentUsername, friendUsername]);
     
     if (!existingFriendship) {
       return res.status(400).json({ error: 'Friendship does not exist' });
     }
 
     //delete row from friends table
-    const deleteQuery = 'DELETE FROM Friends WHERE FriendshipID = $1';
-    await db.none(deleteQuery, existingFriendship.friendshipid);
+    const deleteQuery = 'DELETE FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1);';
+    await db.none(deleteQuery, [currentUsername, friendUsername]);
 
     res.json({ message: 'Friend removed successfully' });
   } catch (error) {
@@ -158,21 +166,21 @@ app.post('/friends/remove', async (req, res) => {
 // Example backend handling for listing friends
 // GET endpoint to retrieve friends list with best score and category
 app.get('/friends/list', async (req, res) => {
-  const userId = req.session.user.userid;
+  const currentUsername = req.session.user.username;
 
   try {
     // Perform database query to get friends list with best score and category
     // Replace the placeholder with your actual query
     const query = `
-      SELECT u.username, MAX(us.score) as bestScore, tc.category
-      FROM Users u
-      JOIN UserScores us ON u.userid = us.UserID
+      SELECT f.FriendID, u.username, MAX(us.score) as bestScore, tc.category
+      FROM Friends f
+      JOIN Users u ON f.FriendID = u.username
+      JOIN UserScores us ON u.username = us.username
       JOIN TriviaCategories tc ON us.CategoryID = tc.CategoryID
-      JOIN Friends f ON u.userid = f.FriendID
-      WHERE f.UserID = $1
-      GROUP BY u.username, tc.category;
+      WHERE f.UserID = (SELECT username FROM Users WHERE username = $1)
+      GROUP BY f.FriendID, u.username, tc.category;
     `;
-    const friendsWithScores = await db.any(query, [userId]);
+    const friendsWithScores = await db.any(query, [currentUsername]);
 
     res.json({ friends: friendsWithScores });
   } catch (error) {
@@ -282,6 +290,11 @@ res.redirect('/game')
 app.get('/game', async (req, res) => {
  
   try {
+    if (!req.session.username)
+    {
+      res.redirect('/login');
+      return;
+    }
     if (req.session.category != undefined)
     {
       console.log(req.session.category);
@@ -326,7 +339,7 @@ app.get('/game', async (req, res) => {
       const shuffled_array = shuffle(q_array);
       req.session.correct_answer = response.results[0].correct_answer;
       
-      res.render('pages/game', { score: req.session.score, shuffledArray: shuffled_array, questions: response.results[0], round: req.session.round});
+      res.render('pages/game', { score: req.session.score, shuffledArray: shuffled_array, questions: response.results[0], round: req.session.round, username: req.session.username});
     }
       catch(error)
       {
