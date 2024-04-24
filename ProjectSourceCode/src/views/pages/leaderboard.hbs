@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+     <table>
+        <thead>
+            <tr>
+                <th>Friend Name</th>
+                <th>Score</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+    <div>
+       <tbody>
+            {{#each friends}}
+            <tr>
+                <td>{{this.username}}</td>
+                <td>{{this.bestscore}}</td>
+                <td>{{this.categoryname}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    </div>
+    <a href="/friends">Return to Friends Page</a>
+
+
+</head>

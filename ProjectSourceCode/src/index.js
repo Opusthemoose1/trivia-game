@@ -100,92 +100,6 @@ app.get('/login', (req, res) => {
   res.render('pages/login');
 });
 
-app.get('/friends', (req, res) => {
-  res.render('pages/friends');
-});
-
-//add friend endpoint
-app.post('/friends/add', async (req, res) => {
-  const currentUsername = req.session.user.username;
-  const friendUsername = req.body.friendUsername; //assuming you receive the friend ID from the request body
-
-  try {
-    // check if the friendship already exists
-    const checkQuery = `
-      SELECT * FROM Friends 
-      WHERE (UserID = $1 AND FriendID = $2) 
-      OR (UserID = $2 AND FriendID = $1);
-    `;
-    const existingFriendship = await db.oneOrNone(checkQuery, [currentUsername, friendUsername]);
-    
-    if (existingFriendship) {
-      return res.status(400).json({ error: 'Friendship already exists' });
-    }
-
-    //insert a new row into the friends table to represent the friendship
-    const insertQuery = 'INSERT INTO Friends (UserID, FriendID) VALUES ($1, $2);';
-    await db.none(insertQuery, [currentUsername, friendUsername]);
-
-    res.json({ message: 'Friend added successfully' });
-  } catch (error) {
-    console.error('Error adding friend:', error);
-    res.status(500).render('friends', { error: 'Failed to add friend' });
-  }
-});
-
-//remove friend endpoint
-app.post('/friends/remove', async (req, res) => {
-  const currentUsername = req.session.user.username;
-  const friendUsername = req.body.friendUsername;
-
-  try {
-    const checkQuery = `
-      SELECT * FROM Friends 
-      WHERE (UserID = $1 AND FriendID = $2) 
-      OR (UserID = $2 AND FriendID = $1);
-    `;
-    const existingFriendship = await db.oneOrNone(checkQuery, [currentUsername, friendUsername]);
-    
-    if (!existingFriendship) {
-      return res.status(400).json({ error: 'Friendship does not exist' });
-    }
-
-    //delete row from friends table
-    const deleteQuery = 'DELETE FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1);';
-    await db.none(deleteQuery, [currentUsername, friendUsername]);
-
-    res.json({ message: 'Friend removed successfully' });
-  } catch (error) {
-    console.error('Error removing friend:', error);
-    res.status(500).json({ error: 'Failed to remove friend' });
-  }
-});
-
-//get friends list
-// GET endpoint to retrieve friends list with best score and category
-app.get('/friends/list', async (req, res) => {
-  const currentUsername = req.session.user.username;
-
-  try {
-    // Perform database query to get friends list with best score and category
-    // Replace the placeholder with your actual query
-    const query = `
-      SELECT f.FriendID, u.username, MAX(us.score) as bestScore, tc.categoryname
-      FROM Friends f
-      JOIN Users u ON f.FriendID = u.username
-      JOIN UserScores us ON u.username = us.username
-      JOIN TriviaCategories tc ON us.CategoryName = tc.CategoryName
-      WHERE f.UserID = (SELECT username FROM Users WHERE username = $1)
-      GROUP BY f.FriendID, u.username, tc.categoryname;
-    `;
-    const friendsWithScores = await db.any(query, [currentUsername]);
-
-    res.json({ friends: friendsWithScores });
-  } catch (error) {
-    console.error('Error getting friends with scores:', error);
-    res.status(500).json({ error: 'Failed to get friends with scores' });
-  }
-});
 
 
 app.post('/login', async (req, res) => {
@@ -197,6 +111,7 @@ app.post('/login', async (req, res) => {
 
     if (match) {
       req.session.user = user;
+      req.session.user.username = req.body.username;
       req.session.save();
       res.redirect('/home');
     } else {
@@ -226,12 +141,12 @@ app.post('/register', async (req, res) => {
   const user = await db.oneOrNone(register_check, [req.body.username]);
   if (user)
   {
-    res.redirect('/register');
     console.log("User is already registered");
+    return res.render('pages/register', {message: "User is already registered"});
+    
   }
 }catch(error)
   {
-    res.redirect('/login');
     console.log(error);
   }
   
@@ -239,17 +154,18 @@ app.post('/register', async (req, res) => {
     if (req.body.password == req.body.confirm_password)
     {
     const insert = await db.any(query, [req.body.username, req.body.email, hash]);
-    res.render('pages/login');
+    return res.render('pages/login');
     }
     else
     {
       console.log("Passwords don't match!");
-      res.redirect('/register');
+      return res.render('pages/register', {message: "Passwords dont Match!"});
     }
   }
   catch (err) {
-    res.redirect('/register');
     console.log(err);
+    res.redirect('/register');
+    
   }
 
 });
@@ -274,9 +190,97 @@ const auth = (req, res, next) => {
   next();
 };
 app.use(auth);
+app.get('/friends', (req, res) => {
+  res.render('pages/friends');
+});
+
+//add friend endpoint
+app.post('/friends/add', async (req, res) => {
+  const currentUsername = req.session.user.username;
+  const friendUsername = req.body.friendUsername; //assuming you receive the friend ID from the request body
+
+  try {
+    // check if the friendship already exists
+    const checkQuery = `
+      SELECT * FROM Friends 
+      WHERE (UserID = $1 AND FriendID = $2) 
+      OR (UserID = $2 AND FriendID = $1);
+    `;
+    const existingFriendship = await db.oneOrNone(checkQuery, [currentUsername, friendUsername]);
+    
+    if (existingFriendship) {
+      res.render('pages/friends', { message: 'Friendship already exists' });
+    }
+
+    //insert a new row into the friends table to represent the friendship
+    const insertQuery = 'INSERT INTO Friends (UserID, FriendID) VALUES ($1, $2);';
+    await db.none(insertQuery, [currentUsername, friendUsername]);
+
+    res.render('pages/friends', { message: 'Friend Added' });
+  } catch (error) {
+    console.error('Error adding friend:', error);
+    res.render('pages/friends', { message: 'Failed to add friend' });
+  }
+});
+
+//remove friend endpoint
+app.post('/friends/remove', async (req, res) => {
+  const currentUsername = req.session.user.username;
+  const friendUsername = req.body.friendUsername;
+
+  try {
+    const checkQuery = `
+      SELECT * FROM Friends 
+      WHERE (UserID = $1 AND FriendID = $2) 
+      OR (UserID = $2 AND FriendID = $1);
+    `;
+    const existingFriendship = await db.oneOrNone(checkQuery, [currentUsername, friendUsername]);
+    
+    if (!existingFriendship) {
+      return res.render('pages/friends', { message: 'Friendship does not exist' });
+    }
+
+    //delete row from friends table
+    const deleteQuery = 'DELETE FROM Friends WHERE (UserID = $1 AND FriendID = $2) OR (UserID = $2 AND FriendID = $1);';
+    await db.none(deleteQuery, [currentUsername, friendUsername]);
+
+    res.render('pages/friends', { message: 'Friend removed successfully' });
+  } catch (error) {
+    console.error('Error removing friend:', error);
+    res.render('pages/friends', {message: 'Failed to remove friend' });
+  }
+});
+
+//get friends list
+// GET endpoint to retrieve friends list with best score and category
+app.get('/friends/list', async (req, res) => {
+  const currentUsername = req.session.user.username;
+
+  try {
+    // Perform database query to get friends list with best score and category
+    // Replace the placeholder with your actual query
+    const query = `
+      SELECT f.FriendID, u.username, MAX(us.score) as bestScore, tc.categoryname
+      FROM Friends f
+      JOIN Users u ON f.FriendID = u.username
+      JOIN UserScores us ON u.username = us.username
+      JOIN TriviaCategories tc ON us.CategoryName = tc.CategoryName
+      WHERE f.UserID = (SELECT username FROM Users WHERE username = $1)
+      GROUP BY f.FriendID, u.username, tc.categoryname;
+    `;
+    const friendsWithScores = await db.any(query, [currentUsername]);
+    res.render('pages/leaderboard', {friends: friendsWithScores});
+   // res.json({ friends: friendsWithScores });
+  } catch (error) {
+    console.error('Error getting friends with scores:', error);
+    res.status(500).json({ error: 'Failed to get friends with scores' });
+  }
+});
+
 app.get('/logout', (req, res) =>
 {
-  res.render('pages/register');
+  req.session.destroy();
+  res.render('pages/register', {message: 'Logged out Succsessfully'});
 }
 );
 app.post('/set-category', async (req, res) =>{
@@ -288,11 +292,6 @@ res.redirect('/game')
 app.get('/game', async (req, res) => {
  
   try {
-    if (!req.session.username)
-    {
-      res.redirect('/login');
-      return;
-    }
     if (req.session.category != undefined)
     {
       console.log(req.session.category);
