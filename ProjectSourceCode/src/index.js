@@ -127,10 +127,9 @@ app.post('/friends/add', async (req, res) => {
     await db.none(insertQuery, [currentUsername, friendUsername]);
 
     res.json({ message: 'Friend added successfully' });
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error adding friend:', error);
-    res.status(500).json({ error: 'Failed to add friend' });
+    res.status(500).render('friends', { error: 'Failed to add friend' });
   }
 });
 
@@ -163,7 +162,6 @@ app.post('/friends/remove', async (req, res) => {
 });
 
 //get friends list
-// Example backend handling for listing friends
 // GET endpoint to retrieve friends list with best score and category
 app.get('/friends/list', async (req, res) => {
   const currentUsername = req.session.user.username;
@@ -172,13 +170,13 @@ app.get('/friends/list', async (req, res) => {
     // Perform database query to get friends list with best score and category
     // Replace the placeholder with your actual query
     const query = `
-      SELECT f.FriendID, u.username, MAX(us.score) as bestScore, tc.category
+      SELECT f.FriendID, u.username, MAX(us.score) as bestScore, tc.categoryname
       FROM Friends f
       JOIN Users u ON f.FriendID = u.username
       JOIN UserScores us ON u.username = us.username
-      JOIN TriviaCategories tc ON us.CategoryID = tc.CategoryID
+      JOIN TriviaCategories tc ON us.CategoryName = tc.CategoryName
       WHERE f.UserID = (SELECT username FROM Users WHERE username = $1)
-      GROUP BY f.FriendID, u.username, tc.category;
+      GROUP BY f.FriendID, u.username, tc.categoryname;
     `;
     const friendsWithScores = await db.any(query, [currentUsername]);
 

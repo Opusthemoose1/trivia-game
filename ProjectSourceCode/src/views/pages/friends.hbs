@@ -13,39 +13,21 @@
         
         <h1>Game Friends Hub</h1>
         <p>Add friends to compare scores and compete!</p>
-    </header>
-    <div class="friends-list">
-        <h2>Friends List</h2>
-        <ul id="friendsList">
-            {{#each friends}}
-                <li>
-                    <strong>{{this.username}}</strong>
-                    <span>Best Score: {{this.bestScore}}</span>
-                    <span>Category: {{this.category}}</span>
-                </li>
-            {{/each}}
-        </ul>
-    </div>
-    
+    </header>    
      
         <section class="actions">
             <h3>Manage Your Friends</h3>
-            <form action="/friends/add" method="POST" class="form-inline mb-2">
-                <input type="text" id="friendUsername" name="friendUsername" placeholder="Enter User ID" class="form-control mr-sm-2">
+            <form action="/friends/add" method="POST">
+                <input type="text" id="friendUsername" name="friendUsername" placeholder="Enter Friend's ID" class="form-control mr-sm-2">
                 <button type="submit" class="btn btn-primary">Add Friend</button>
             </form>
 
-            <form action="/friends/remove" method="POST" class="form-inline">
+            <form action="/friends/remove" method="POST">
                 <input type="text" id="friendUsername" name="friendUsername" placeholder="Friend's User ID" class="form-control mr-sm-2">
                 <button type="submit" class="btn btn-danger">Remove Friend</button>
             </form>
         </section>
         
-        <section class="top-scores mt-4">
-            <h3>Top Scores</h3>
-            <p>Check out the high scores among your friends!</p>
-            <button class="btn btn-info">View Scores</button> 
-        </section>
     </main>
 </body>
 </html>
