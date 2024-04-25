@@ -1,11 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Game</title>
 <h1>Select a Category:</h1>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/style.css">
 
 <form id="category-form" action="/set-category" method="POST">
-<ul>
-    {{#each categories}}
-    <button type="submit" class="category-button" name="category" value="{{id}}">{{name}}</button>
-    {{/each}}
-</ul>
+  <table class="table">
+    <tbody>
+      {{#each categories}}
+      <tr>
+        <td>
+          <button type="submit" class="btn btn-primary category-button" name="category" value="{{id}}">{{name}}</button>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
 </form>
+</html>

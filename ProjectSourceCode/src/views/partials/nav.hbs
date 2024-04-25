@@ -8,7 +8,7 @@
 
 </head>
 <body>
-<header style="height:70px; top:0px; position: fixed; width: 100%; background-color: white; z-index: 1000;">
+<header style="height:70px; top:0px; position: fixed; width: 100%; background-color: rgb(255, 255, 255); z-index: 1000;">
     <nav class="navbar navbar-expand-sm navbar-light border-bottom">
       <div class="container-fluid">
         <a class="navbar-brand" href="/home">
@@ -17,8 +17,17 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbar-collapse">
-          <ul class="navbar-nav">
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+          <ul class="navbar-nav mr-auto"> 
+            <li class="nav-item">
+            </li>
+          </ul>
+          <ul class="navbar-nav mx-auto"> 
+            <li class="nav-item">
+              <a class="nav-link" href="/home">3308 Trivia</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ml-auto"> 
             <li class="nav-item">
               <a class="nav-link" href="/logout">Log Out</a>
             </li>
@@ -29,7 +38,6 @@
 </header>
 
 <main style="padding-top: 80px;">
-    <!-- Main content goes here -->
 </main>
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

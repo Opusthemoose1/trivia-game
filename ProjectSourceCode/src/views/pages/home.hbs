@@ -6,19 +6,35 @@
     <title>Trivia Game Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/style.css">
-    <img src="../img/Trivia Logo.png" alt="Trivia Game Logo" style="height: 250px;">
-     <h1>Welcome to the Trivia Challenge!</h1>
+    <style>
+           body {
+            background-image: url('../img/3308\ trivia.png'); 
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed; 
+        }
+        .container {
+            background-color: #fff; /* Sets the background color to white */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+            padding: 20px; /* Adds some padding inside the container */
+            border-radius: 5px; /* Optional: rounds the corners of the container */
+        }
+    </style>
 </head>
 <body>
-    <main>
-           
-        <section class="intro">
-            <p>Test your knowledge across various categories and see how much you really know!</p>
-        </section>
-        <section class="actions" style="flex-direction: row; margin-bottom: 70px">
-            <button onclick="window.location.href='/start-game';">Start Game</button>
-            <button onclick="window.location.href='/friends';">Friends</button>
-        </section>
-    </main>
+    <div class="container text-center"> <!-- Existing container with added classes -->
+        <img src="../img/Trivia Logo.png" alt="Trivia Game Logo" style="height: 250px;">
+        <h1>Welcome to the Trivia Challenge!</h1>
+        
+        <main>
+            <section class="intro my-4">
+                <p>Test your knowledge across various categories and see how much you really know!</p>
+            </section>
+            <section class="actions my-4" style="display: flex; justify-content: center;">
+                <button onclick="window.location.href='/start-game';" class="btn btn-primary mx-2">Start Game</button>
+                <button onclick="window.location.href='/friends';" class="btn btn-secondary mx-2">Friends</button>
+            </section>
+        </main>
+    </div>
 </body>
 </html>

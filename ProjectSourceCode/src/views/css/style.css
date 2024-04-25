@@ -5,7 +5,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
             background-color: #f4f4f4;
         }
         .login-container {
@@ -47,7 +46,7 @@
         }
 
 header h1 {
-    color: #fff;
+    color: #000000;
 }
 
 .intro p {
@@ -95,16 +94,16 @@ header h1 {
 
 .form-control {
     margin-right: 10px;
-    width: auto; /* Adjusts the width based on content */
+    width: auto; 
 }
 
 .btn-primary, .btn-danger {
-    padding: 8px 16px; /* More padding for better touch interaction */
+    padding: 8px 16px; 
 }
 
 ul#friendsList {
     padding: 0;
-    list-style-type: none; /* Removes bullet points */
+    list-style-type: none; 
 }
 
 ul#friendsList li {
@@ -112,11 +111,11 @@ ul#friendsList li {
     background-color: #e9ecef;
     border-radius: 10px;
     padding: 10px 20px;
-    width: 300px; /* Fixed width for uniform appearance */
-    text-align: left; /* Align text to the left */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Soft shadow for depth */
+    width: 300px; 
+    text-align: left;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
 }
 
 ul#friendsList li:hover {
-    background-color: #dfe4ea; /* Lighter on hover for interactive feel */
+    background-color: #dfe4ea; 
 }
