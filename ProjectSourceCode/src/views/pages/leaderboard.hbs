@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <head>
-     <table>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+</head>
+<body>
+    <table>
         <thead>
             <tr>
                 <th>Friend Name</th>
@@ -8,8 +13,7 @@
                 <th>Category</th>
             </tr>
         </thead>
-    <div>
-       <tbody>
+        <tbody>
             {{#each friends}}
             <tr>
                 <td>{{this.username}}</td>
@@ -19,8 +23,5 @@
             {{/each}}
         </tbody>
     </table>
-    </div>
     <a href="/friends">Return to Friends Page</a>
-
-
-</head>
+</body>
