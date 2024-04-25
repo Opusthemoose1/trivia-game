@@ -280,7 +280,7 @@ app.get('/friends/list', async (req, res) => {
 app.get('/logout', (req, res) =>
 {
   req.session.destroy();
-  res.render('pages/register', {message: 'Logged out Succsessfully'});
+  res.render('pages/register', {message: 'Logged out Successfully'});
 }
 );
 app.post('/set-category', async (req, res) =>{
