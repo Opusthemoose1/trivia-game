@@ -14,6 +14,7 @@ Spartak Mikayelyan (spmi6902@colorado.edu)
 - Frontend: HTML, CSS, JavaScript
 - Backend: Javascript
 - Database: PostgreSQL
+- API: Quiz API
 
 -- Prerequisites to run the application --
 
