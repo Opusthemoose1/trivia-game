@@ -20,11 +20,16 @@ Spartak Mikayelyan (spmi6902@colorado.edu)
 No prequisites, should be able to clone the repo directly and know how to navigate to the correct folder
 
 -- How to run the application locally -- 
+
 Clone the repo
 Navigate to trivia-game/ProjectSourceCode
 Do sudo docker compose up
 Access the website via localhost:3000
+
 -- How to run the tests -- 
+
 The tests are run automatically using mocha
+
 -- Link to the deployed application -- 
+
 http://recitation-13-team-3.eastus.cloudapp.azure.com:3000/login
