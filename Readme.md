@@ -23,3 +23,4 @@ Spartak Mikayelyan (spmi6902@colorado.edu)
 -- How to run the tests -- 
 
 -- Link to the deployed application -- 
+http://recitation-13-team-3.eastus.cloudapp.azure.com:3000/login
